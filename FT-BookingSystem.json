@@ -1,0 +1,1334 @@
+{
+  "name": "FT-BookingSystem",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2560,
+        -960
+      ],
+      "id": "2bcac703-d975-4567-a1a3-11d2dca47ba3",
+      "name": "WhatsApp Trigger",
+      "webhookId": "df2f79be-01e2-40f2-b241-1f8757008353",
+      "executeOnce": false,
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "kxhCYno7OLfn9WQ9",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## Reglas de Procesamiento\n1. Analiza el mensaje: {{ $json.toJsonString() }}\n2. Identifica la intención principal\n3. Extrae todos los datos relevantes (fechas, horas)\n4. Si falta información crítica, marca needs_followup: true y lista missing_info\n5. Genera response_message apropiado\n6. Valida horarios del centro (rechaza sesiones fuera del horario)\n7. Devuelve ÚNICAMENTE el objeto JSON. NO incluyas bloques de código Markdown (por ejemplo, ```json...```) ni texto adicional alrededor del JSON.\n\n## Ejemplos de Entrada y Salida\n\n**Entrada:** \"Añade una sesión mañana a las 9 am con Julien\"\n{\n  \"intent\": \"crear_sesion\",\n  \"data\": {\n    \"title\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n    \"date_time\": \"{{ $now.plus({days: 1}).format('yyyy-MM-dd HH:mm') }}\",\n    \"participant\": \"Julien\"\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"Sesión con Julien añadida mañana a las 9 am.\",\n  \"missing_info\": [],\n  \"needs_followup\": false,\n  \"error\": false\n}\n\n\n**Entrada:** \"¿Qué sesiones tengo el viernes?\"\n{\n  \"intent\": \"buscar_eventos\",\n  \"data\": {\n    \"date_range\": \"specific_date\",\n    \"specific_date\": \"2024-XX-XX\", // calcular próximo viernes y devuelve la fecha exacta\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"Buscando tus sesiones del viernes...\",\n  \"missing_info\": [],\n  \"needs_followup\": false\n  \"error\": false\n}\n\n**Entrada:** \"Quería reservar una sesión ayer a las 8am\"\n{\n  \"intent\": \"crear_sesion\",\n  \"data\": {\n    \"date_range\": \"specific_date\",\n    \"specific_date\": \"2024-XX-XX\", // calcular próximo viernes y devuelve la fecha exacta\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }},\n  \"response_message\": \"Lo siento, no puedes reservar una sesión en el pasado. Por favor, proporciona una fecha futura.\",\n  \"missing_info\": [],\n  \"needs_followup\": false\n  \"error\": true\n}\n\n## Variables de Contexto\n- Horario del centro: Lunes a Viernes de 7am a 10pm y Sabados de 9am a 2pm\n- Dirección del centro:  C. de la Sierra de Atapuerca, 6, Fuencarral-El Pardo, 28050 Madrid\n- Teléfono: 659 87 21 37\n- Precios:\n  - Bono de 4 sesiones de entrenamiento personal: 150€\n  - Bono de 8 sesiones de entrenamiento personal: 272€\n  - Bono de 12 sesiones de entrenamiento personal: 384€\n  - Bono de 8 sesiones de entrenamiento en grupo: 168€\n  - Bono de 12 sesiones de entrenamiento en grupo: 240€\n- Fecha actual: {{ $now.format('yyyy-MM-dd') }}\n- Zona horaria: Madrid/Europe\n- wa_id: {{ $('WhatsApp Trigger').item.json.messages[0].from }}\n- Mensaje: {{ $json.toJsonString() }}\n- Cada cliente solo puede reservar una sesión por día\n- No puede haber más de dos sesiones a la misma hora\n\nProcesa el siguiente mensaje y devuelve únicamente el JSON estructurado: {{ $json.toJsonString() }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Resumen  \nEres un asistente personal de IA para el centro de entrenamiento personal Favourite Trainer en Las Tablas, que procesa mensajes de WhatsApp y devuelve respuestas estructuradas en formato JSON para automatización con n8n. Sin suposiciones ni atajos, solo ejecuta a través de los módulos designados. Intenta que los mensajes sean cortos, naturales de una conversación de whatsapp.\n\n## Contexto  \n- Procesas solicitudes de WhatsApp y devuelves JSON con las acciones necesarias\n- Analizas intenciones y extraes datos relevantes para operaciones de calendario\n- Entiendes tanto francés como inglés\n- Tu análisis debe ser preciso y orientado a la acción\n\n## Instrucciones de Respuesta JSON\nSiempre devuelve un JSON con la siguiente estructura:\n\n{\n  \"intent\": \"string\", // crear_evento, buscar_eventos, actualizar_evento, eliminar_evento, saludo, consulta_general\n  \"data\": {\n    // campos específicos según el intent\n  },\n  \"wa_id\": \"string\", // {{ $('WhatsApp Trigger').item.json.messages[0].from }}\n  \"response_message\": \"string\", // mensaje a enviar por WhatsApp\n  \"missing_info\": [\"array\"], // campos faltantes que necesitan aclaración (en español)\n  \"needs_followup\": \"boolean\", // si necesita más información del usuario\n  \"error\": \"boolean\" // si no se puede procesar la petición del usuario\n}\n\n## Mapeo de Intents y Módulos\n\n### 1. crear_sesion\n{\n  \"intent\": \"crear_sesion\",\n  \"data\": {\n    \"title\": \"string\", // usar wa_id como título\n    \"date_time\": \"YYYY-MM-DDTHH:MM\",\n    \"participant\": \"string\" // nombre del cliente si se menciona\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"string\",\n  \"missing_info\": [],\n  \"needs_followup\": false\n}\n\n### 2. buscar_eventos\n{\n  \"intent\": \"buscar_eventos\",\n  \"data\": {\n    \"date_range\": \"string\", // \"today\", \"tomorrow\", \"this_week\", \"specific_date\"\n    \"specific_date\": \"YYYY-MM-DD\", // si aplica\n    \"search_type\": \"string\" // \"availability\", \"list_events\", \"specific_event\"\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"string\",\n  \"missing_info\": [],\n  \"needs_followup\": false,\n  \"error\": false\n}\n\n### 3. actualizar_evento\n{\n  \"intent\": \"actualizar_evento\",\n  \"data\": {\n    \"search_criteria\": \"string\", // criterio para encontrar el evento\n    \"date_time\": \"YYYY-MM-DDTHH:MM\",\n    \"new_date_time\": \"YYYY-MM-DDTHH:MM\",\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"string\",\n  \"missing_info\": [],\n  \"needs_followup\": false\n  \"error\": false\n}\n\n### 4. eliminar_evento\n{\n  \"intent\": \"eliminar_evento\",\n  \"data\": {\n    \"search_criteria\": \"string\", // criterio para encontrar el evento\n    \"date_time\": \"YYYY-MM-DDTHH:MM\",\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"string\",\n  \"missing_info\": [],\n  \"needs_followup\": false\n  \"error\": false\n}\n\n### 5. saludo\n{\n  \"intent\": \"saludo\",\n  \"action_required\": false,\n  \"module\": null,\n  \"data\": {},\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"¡Hola! Gracias por contactar con Favourite Trainer, ¿en qué podemos ayudarte?\",\n  \"missing_info\": [],\n  \"needs_followup\": false\n  \"error\": false\n}\n\n### 6. consulta_general\n{\n  \"intent\": \"consulta_general\",\n  \"action_required\": true,\n  \"module\": \"Informacion sobre el centro\",\n  \"data\": {\n    \"query_type\": \"string\", // \"horarios\", \"precios\", \"servicios\", \"ubicacion\"\n  },\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.messages[0].from }}\",\n  \"response_message\": \"string\",\n  \"missing_info\": [],\n  \"needs_followup\": false\n  \"error\": false\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        -960
+      ],
+      "id": "d3c9ace2-ce2e-420f-90fc-b0931755e540",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        -736
+      ],
+      "id": "f1a9cbe7-72c8-41ec-ab8c-29f4cc38324d",
+      "name": "Chat Memory"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "742684742266734",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.response }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -880
+      ],
+      "id": "290ba05b-8d76-482f-b3e8-550526f6c575",
+      "name": "Send message",
+      "webhookId": "84c7aeb2-8478-4ae0-9b0a-b53146b65cfd",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3idoMG9n4wMOAXwp",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to get info about the fitness center.",
+        "workflowId": {
+          "__rl": true,
+          "value": "rbqpkiQV4ZfFhj6l",
+          "mode": "list",
+          "cachedResultName": "Parse Website Info"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "Input"
+          ],
+          "schema": [
+            {
+              "id": "Input",
+              "displayName": "Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        -736
+      ],
+      "id": "5e08a212-7302-43b8-8324-e84fda26e586",
+      "name": "Informacion sobre el centro"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "05397ec3-9048-458b-bb92-69adeefde1e6",
+                    "leftValue": "={{ $('AI Agent').item.json.output }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "99eace3e-17c2-49c4-9f29-8339edb03a2a",
+                    "leftValue": "={{ $('AI Agent').item.json.output.error }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9f35b11f-6217-4bc4-8eba-c59ec8cc2710",
+                    "leftValue": "={{ $json.output.missing_info }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('AI Agent').item.json.output.intent }}",
+                    "rightValue": "crear_sesion",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d903e1b2-9dcf-45f3-a01c-3712a77678ab"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6abf5343-f2d6-4d2e-9329-3a10e65c6795",
+                    "leftValue": "={{ $('AI Agent').item.json.output.intent }}",
+                    "rightValue": "buscar_eventos",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c174035b-37e2-42a7-843d-802e520963f5",
+                    "leftValue": "={{ $('AI Agent').item.json.output.intent }}",
+                    "rightValue": "actualizar_evento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "631816d3-aa80-4195-aeec-9f7e526d0397",
+                    "leftValue": "={{ $('AI Agent').item.json.output.intent }}",
+                    "rightValue": "eliminar_evento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cb894f7e-af72-462d-b0ea-596e25ec6474",
+                    "leftValue": "={{ $('AI Agent').item.json.output.intent }}",
+                    "rightValue": "saludo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a14a456d-b3c2-4570-a33d-97dccb6452b5",
+                    "leftValue": "={{ $('AI Agent').item.json.output.intent }}",
+                    "rightValue": "consulta_general",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        -1072
+      ],
+      "id": "adea39df-e4e8-448e-930d-1e7e3469c46c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "joserra013@gmail.com",
+          "mode": "list",
+          "cachedResultName": "joserra013@gmail.com"
+        },
+        "start": "={{ $json.data.date_time }}",
+        "end": "={{ $json.data.date_time.toDateTime().plus(1, 'hour')}}",
+        "useDefaultReminders": false,
+        "additionalFields": {
+          "color": "={{ $json.mode }}",
+          "summary": "={{ $json.summary }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        -1024
+      ],
+      "id": "0497b650-16af-4c63-a87e-8dbf5f129a39",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UP30yAvighughmGVt1JbTe7QWu9IixLLU_d5KRL59dA",
+          "mode": "list",
+          "cachedResultName": "FT_Clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UP30yAvighughmGVt1JbTe7QWu9IixLLU_d5KRL59dA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Entrenados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UP30yAvighughmGVt1JbTe7QWu9IixLLU_d5KRL59dA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Teléfono Móvil",
+              "lookupValue": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2336,
+        -960
+      ],
+      "id": "45dad44e-e320-4b7d-9a27-a92611cc015a",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2fTLp8Lx6GjNHWK9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/aqa",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -528
+      ],
+      "id": "11e108a9-4b96-4e4a-8c98-b47d92e74569",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sq0Q99yBA4jIdJmT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"intent\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"data\": {\n\t\t\t\"type\": \"object\"\n\t\t},\n        \"wa_id\": {\n          \"type\": \"string\"\n        },\n        \"response_message\":{\n          \"type\": \"string\"\n        },\n        \"missing_info\":{\n          \"type\": \"array\"\n        },\n        \"needs_followup\":{\n          \"type\": \"boolean\"\n        },\n        \"error\": {\n          \"type\": \"boolean\"\n        }\n\t}\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        -736
+      ],
+      "id": "4a98a2b9-1ec8-42f4-9369-bce3ae4149fb",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        -528
+      ],
+      "id": "24a7e1ed-b613-4b7e-afcf-d7d10293e0a1",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "DTN0DfQkPOChxtDn",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let mode;\nconst name = $('Get row(s) in sheet').first().json.Nombre\nlet summary;\n\nif(!name){\n  summary = \"Sesión de prueba\"\n} else {\n  summary = $('Get row(s) in sheet').first().json.Nombre + \" \" + $('Get row(s) in sheet').first().json.Apellidos\n}\n\n\nif ($('Get row(s) in sheet').first().json[\"Bono (Personal / grupo)\"] == \"Personal\") {\n  mode = 2;\n} else {\n  mode = 5;\n}\n\nreturn({\n  \"intent\": \"crear_sesion\",\n  \"mode\": mode,\n  \"data\": {\n    \"title\": $('WhatsApp Trigger').first().json.messages[0].from, // usar wa_id como título\n    \"date_time\": $('AI Agent').first().json.output.data.date_time,\n    \"participant\": \"string\" // nombre del cliente si se menciona\n  },\n  \"wa_id\": $('WhatsApp Trigger').first().json.messages[0].from,\n  \"response_message\": \"string\",\n  \"summary\": summary\n})"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -1024
+      ],
+      "id": "416748c7-ed91-4cd6-8e6a-6e93968a6bdd",
+      "name": "Grupo/Personal"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "joserra013@gmail.com",
+          "mode": "list",
+          "cachedResultName": "joserra013@gmail.com"
+        },
+        "limit": 24,
+        "timeMin": "={{ $('AI Agent').item.json.output.data.specific_date }}",
+        "timeMax": "={{ $('AI Agent').item.json.output.data.specific_date.toDateTime().plus(1, 'days') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        -688
+      ],
+      "id": "496adccc-0f03-4026-811b-1e0e370c40a3",
+      "name": "Get events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0b637ee1-33ba-4c21-84d1-701dfcd4e2cd",
+              "name": "=response",
+              "value": "=Hola {{ $('Get row(s) in sheet').item.json.Nombre }}!\n\n{{ $('AI Agent').item.json.output.response_message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        -880
+      ],
+      "id": "afb44ec6-58aa-411c-961e-ba268b0b5712",
+      "name": "ConfirmSession"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96e8ce04-2a54-4d8a-bde7-676a90c87bf3",
+              "name": "response",
+              "value": "=Hola {{ $('Get row(s) in sheet').item.json.Nombre }}\n\nTienes sesion el {{ $json.start.dateTime.toDateTime().toISODate({precision: 'month'})}} a las {{ $json.start.dateTime.toDateTime().hour}}:{{ $json.start.dateTime.toDateTime().minute}}\n\nTe esperamos!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        -688
+      ],
+      "id": "af9db394-13e2-4950-8ccb-d7c3b05b7b09",
+      "name": "Tell Sessions"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -528
+      ],
+      "id": "e9435e28-b171-465d-b7d5-d817aeb39581",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Fc2skzxqWldn6pDp",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "joserra013@gmail.com",
+          "mode": "list",
+          "cachedResultName": "joserra013@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ $now.plus({ day: 1 }) }}",
+        "options": {
+          "query": "={{ $('Get row(s) in sheet').item.json.Nombre }} + \" \" +  {{ $('Get row(s) in sheet').item.json.Apellidos }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -288,
+        -736
+      ],
+      "id": "00d6d1cb-3d54-43e6-bb1d-32e905aaa987",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f13730c4-d4b8-408e-adfc-0523c6afe22a",
+              "name": "response",
+              "value": "={{ $('AI Agent').item.json.output.response_message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        -1168
+      ],
+      "id": "0dc2e8e7-3800-4894-b1cd-916b9fb1ee0f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "joserra013@gmail.com",
+          "mode": "list",
+          "cachedResultName": "joserra013@gmail.com"
+        },
+        "timeMin": "={{ $json.output.data.date_time }}",
+        "timeMax": "={{ $json.output.data.new_date_time }}",
+        "options": {
+          "query": "={{ $('Get row(s) in sheet').item.json.Nombre }} + \" \" + {{ $('Get row(s) in sheet').item.json.Apellidos }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        -496
+      ],
+      "id": "e342f60d-1177-4733-a95e-00deb7335979",
+      "name": "Get many events",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "joserra013@gmail.com",
+          "mode": "list",
+          "cachedResultName": "joserra013@gmail.com"
+        },
+        "eventId": "={{ $json.id }}",
+        "useDefaultReminders": false,
+        "updateFields": {
+          "end": "={{ $('AI Agent').item.json.output.data.new_date_time.toDateTime().plus(1, 'hour') }}",
+          "start": "={{ $('AI Agent').item.json.output.data.new_date_time }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        -496
+      ],
+      "id": "bf8fada2-73f1-484f-bd9a-3e5ba319b795",
+      "name": "Update an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "joserra013@gmail.com",
+          "mode": "list",
+          "cachedResultName": "joserra013@gmail.com"
+        },
+        "limit": 1,
+        "timeMin": "={{ $json.output.data.date_time }}",
+        "timeMax": "={{ $json.output.data.date_time.toDateTime().plus(1, 'month') }}",
+        "options": {
+          "query": "={{ $('Get row(s) in sheet').item.json.Nombre }} + \" \" + {{ $('Get row(s) in sheet').item.json.Apellidos }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        -304
+      ],
+      "id": "6465b078-e615-4606-a886-e1d510a92d89",
+      "name": "Get many events1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "joserra013@gmail.com",
+          "mode": "list",
+          "cachedResultName": "joserra013@gmail.com"
+        },
+        "eventId": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        -304
+      ],
+      "id": "fbf33fc4-4772-4cce-bde8-ac8e5ea37287",
+      "name": "Delete an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9814fb22-4a49-41a2-86da-14f6ea272463",
+              "leftValue": "={{ $('WhatsApp Trigger').item.json.messages[0].type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2112,
+        -960
+      ],
+      "id": "08daafa3-97d8-4bc6-9141-2d38adad68b6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $('WhatsApp Trigger').item.json.messages[0].audio.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -1888,
+        -864
+      ],
+      "id": "952e5d25-06f5-4b7f-b95d-a8dffc8812be",
+      "name": "Get audio URL",
+      "webhookId": "a5390bbd-a591-4305-b5ee-62e3b28ef599",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3idoMG9n4wMOAXwp",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1664,
+        -864
+      ],
+      "id": "ca253e9f-c1dc-4bd3-b134-9ec625d7fed0",
+      "name": "Download audio",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "zyi3unkUnzoKRmVd",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-exp",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-exp"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        -864
+      ],
+      "id": "6b08eb1a-2215-4a5c-af51-4be605d2f5b5",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sq0Q99yBA4jIdJmT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const audioMsg = {\n  ...$('WhatsApp Trigger').first().json.messages[0],\n  text: {\n    body: $input.first().json.content.parts[0].text\n  }\n}\n\nlet whatsappObj = $('WhatsApp Trigger').first().json\nwhatsappObj.messages[0] = audioMsg\n\nreturn whatsappObj;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1216,
+        -864
+      ],
+      "id": "2994dafe-4b7f-4ab1-bc59-4801658c0012",
+      "name": "Convert into body"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dc1c3b93-ecdd-46bd-83f5-4f10f6e732ef",
+              "leftValue": "={{ $('WhatsApp Trigger').item.json.messages[0].type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -992,
+        -960
+      ],
+      "id": "23f00f99-03b3-4594-a57b-a2624f44b9d4",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('WhatsApp Trigger').first().json;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        -1008
+      ],
+      "id": "b35949cf-e376-4085-8705-6ae2ec6b73ad",
+      "name": "Return Whatsapp Text"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('Convert into body').first().json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        -816
+      ],
+      "id": "8ec9f1bb-97b6-40b2-a3a8-780b3e3dfad2",
+      "name": "Return audio text"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Informacion sobre el centro": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ConfirmSession",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Grupo/Personal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get events",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get many events1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ConfirmSession",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "ConfirmSession",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Grupo/Personal": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get events": {
+      "main": [
+        [
+          {
+            "node": "Tell Sessions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConfirmSession": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tell Sessions": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "Update an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update an event": {
+      "main": [
+        [
+          {
+            "node": "ConfirmSession",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events1": {
+      "main": [
+        [
+          {
+            "node": "Delete an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete an event": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get audio URL": {
+      "main": [
+        [
+          {
+            "node": "Download audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download audio": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Convert into body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert into body": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Return Whatsapp Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return audio text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return Whatsapp Text": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return audio text": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "8a208556-c0da-4dc7-879c-6a3ede75a08f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b6c612a53e312f4f2479997043e7752e49d692a2c9d97d16faf7033757675f39"
+  },
+  "id": "5T6D6zusbdSCRDQD",
+  "tags": []
+}
