@@ -1,0 +1,66 @@
+{
+  "name": "Error_FT-BookingSystem",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        0
+      ],
+      "id": "0fa27548-0354-4c8e-8d6e-91b6a031a7f1",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "742684742266734",
+        "recipientPhoneNumber": "34653092397",
+        "textBody": "=Problem in {{ $json.workflow.name }} workflow in n8n. The node {{ $json.execution.error.node.name }} raised the following error  {{ $json.execution.error.message }} {{ $json.execution.error.messages[0] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "de16742f-5fc6-4682-99fa-48d5ba174995",
+      "name": "Send message",
+      "webhookId": "519fb2f9-9271-4fde-9775-32a4dfe3e8ae",
+      "executeOnce": false,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3idoMG9n4wMOAXwp",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c2479a21-0488-4527-8f0c-4d031826a8ea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b6c612a53e312f4f2479997043e7752e49d692a2c9d97d16faf7033757675f39"
+  },
+  "id": "JnzPl20ahOeKZbta",
+  "tags": []
+}
