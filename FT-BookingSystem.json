@@ -37,7 +37,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -5032,
+        -5040,
         -96
       ],
       "id": "dec21c71-6400-462c-95f0-3f86b34243e8",
@@ -57,7 +57,7 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1,
       "position": [
-        -1968,
+        -1760,
         144
       ],
       "id": "7d7dca06-945a-4e62-9c0a-21bbd912b5ac",
@@ -438,9 +438,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "limit": 20,
         "timeMin": "={{ $('AI Agent').item.json.output.data.specific_date }}",
@@ -453,7 +453,7 @@
       "typeVersion": 1.3,
       "position": [
         -2640,
-        168
+        176
       ],
       "id": "5f941cfa-b8e7-4ce5-b9ef-75a064aabc54",
       "name": "Get events",
@@ -490,9 +490,9 @@
         "operation": "delete",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "eventId": "={{ $json.id }}",
         "options": {}
@@ -501,7 +501,7 @@
       "typeVersion": 1.3,
       "position": [
         -2416,
-        792
+        800
       ],
       "id": "c7a2d1d1-4d43-46ee-8b2b-3111faa23f5a",
       "name": "Delete an event",
@@ -556,7 +556,7 @@
       "typeVersion": 1,
       "position": [
         -6624,
-        -24
+        -32
       ],
       "id": "ed5b9286-999c-4198-b6b4-0d9d38cf7e30",
       "name": "Get audio URL",
@@ -579,7 +579,7 @@
       "typeVersion": 4.2,
       "position": [
         -6400,
-        -24
+        -32
       ],
       "id": "ee47ff50-35ac-4609-8948-190c3ad96b5d",
       "name": "Download audio",
@@ -606,7 +606,7 @@
       "typeVersion": 1,
       "position": [
         -6176,
-        -24
+        -32
       ],
       "id": "6a9b9752-23ed-4070-820c-c98ae96c49be",
       "name": "Transcribe a recording",
@@ -625,7 +625,7 @@
       "typeVersion": 2,
       "position": [
         -5952,
-        -24
+        -32
       ],
       "id": "1b27a63b-adc4-49f0-a90e-3416c6d876c8",
       "name": "Convert into body"
@@ -731,7 +731,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2640,
+        -2432,
         -1104
       ],
       "id": "6b87e66e-82a7-42c2-b471-218929f8b674",
@@ -744,8 +744,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -3760,
-        -792
+        -3552,
+        -800
       ],
       "id": "c1d52fa3-ab53-4fbb-9f21-fa6b9571f1c1",
       "name": "Grupo"
@@ -754,9 +754,9 @@
       "parameters": {
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "start": "={{ $json.data.date_time }}",
         "end": "={{ $json.data.date_time.toDateTime().plus(1, 'hour')}}",
@@ -769,7 +769,7 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2416,
+        -2208,
         -1104
       ],
       "id": "c04160db-b90d-4608-ad09-66a946f9c3b5",
@@ -798,7 +798,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2192,
+        -1984,
         -384
       ],
       "id": "842af014-0e91-4721-834b-dad3e83f4f5c",
@@ -809,9 +809,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "timeMin": "={{ $json.output.data.date_time }}",
         "timeMax": "={{ $json.output.data.date_time.toDateTime().plus(1, 'hour') }}",
@@ -823,7 +823,7 @@
       "typeVersion": 1.3,
       "position": [
         -2640,
-        456
+        464
       ],
       "id": "ee4b1333-4ea4-44d0-9de7-bbdbda29c256",
       "name": "Check booked sessions",
@@ -840,9 +840,9 @@
         "operation": "update",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "eventId": "={{ $json.id }}",
         "useDefaultReminders": false,
@@ -855,7 +855,7 @@
       "typeVersion": 1.3,
       "position": [
         -2416,
-        456
+        464
       ],
       "id": "89dc9327-f8f5-40d4-b063-4889704dbe1d",
       "name": "Update session",
@@ -871,9 +871,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "limit": 1,
         "timeMin": "={{ $json.output.data.date_time }}",
@@ -886,42 +886,10 @@
       "typeVersion": 1.3,
       "position": [
         -2864,
-        648
+        656
       ],
       "id": "af8bfe07-c553-459c-8993-992e5639a27d",
       "name": "Get session",
-      "alwaysOutputData": true,
-      "credentials": {
-        "googleCalendarOAuth2Api": {
-          "id": "ruF1VNt8LhGDbDr6",
-          "name": "Google Calendar account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "getAll",
-        "calendar": {
-          "__rl": true,
-          "value": "joserra013@gmail.com",
-          "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
-        },
-        "limit": 5,
-        "timeMin": "={{ $json.data.date_time }}",
-        "timeMax": "={{ $json.data.date_time.toDateTime().plus(1, 'hour')}}",
-        "options": {
-          "query": "Grupo"
-        }
-      },
-      "type": "n8n-nodes-base.googleCalendar",
-      "typeVersion": 1.3,
-      "position": [
-        -3536,
-        -792
-      ],
-      "id": "ac63b4c4-bdc8-47db-a454-1028c806f3af",
-      "name": "Session existing?",
       "alwaysOutputData": true,
       "credentials": {
         "googleCalendarOAuth2Api": {
@@ -958,8 +926,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3312,
-        -792
+        -3104,
+        -800
       ],
       "id": "50f791e8-db16-427b-9a0a-4e2e43fc18e3",
       "name": "Session found"
@@ -968,9 +936,9 @@
       "parameters": {
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "start": "={{ $('Grupo').item.json.data.date_time }}",
         "end": "={{ $('Grupo').item.json.data.date_time.toDateTime().plus(1, 'hour') }}",
@@ -983,7 +951,7 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2416,
+        -2208,
         -528
       ],
       "id": "05c8bc7d-a8a3-4c14-8aa5-d8c2b8a15933",
@@ -1000,9 +968,9 @@
         "operation": "update",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "eventId": "={{ $json.id }}",
         "useDefaultReminders": false,
@@ -1013,8 +981,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -3088,
-        -792
+        -2880,
+        -800
       ],
       "id": "fd81d4f4-23fb-4235-9631-e6d529e634b6",
       "name": "Add client",
@@ -1032,8 +1000,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2864,
-        -792
+        -2656,
+        -800
       ],
       "id": "7ac7f242-42e8-469f-9d5c-6270853d848c",
       "name": "Session full?"
@@ -1066,8 +1034,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2640,
-        -792
+        -2432,
+        -800
       ],
       "id": "48e84e87-79b5-4920-b4ea-0c3b23ee513c",
       "name": "If session full"
@@ -1077,9 +1045,9 @@
         "operation": "update",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "eventId": "={{ $('Add client').item.json.id }}",
         "useDefaultReminders": false,
@@ -1090,7 +1058,7 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2416,
+        -2208,
         -816
       ],
       "id": "8f9a6897-55fb-45c2-a96d-ad7ea1e28c2a",
@@ -1131,7 +1099,7 @@
       "typeVersion": 2.2,
       "position": [
         -2416,
-        168
+        176
       ],
       "id": "5b4a865d-15bd-4331-8264-49c964dabe05",
       "name": "No events?",
@@ -1155,7 +1123,7 @@
       "typeVersion": 3.4,
       "position": [
         -2192,
-        168
+        176
       ],
       "id": "93babbbb-7f15-4d5f-9348-f455e51dc805",
       "name": "No sessions"
@@ -1189,7 +1157,7 @@
       "typeVersion": 2.2,
       "position": [
         -2640,
-        648
+        656
       ],
       "id": "809fe118-241b-4c78-abf2-527656075dfc",
       "name": "Session found?"
@@ -1223,7 +1191,7 @@
       "typeVersion": 2.2,
       "position": [
         -2864,
-        24
+        32
       ],
       "id": "9d27dba1-5bac-4a92-8c07-a63753c289b1",
       "name": "CheckData"
@@ -1246,7 +1214,7 @@
       "typeVersion": 3.4,
       "position": [
         -2192,
-        360
+        368
       ],
       "id": "06eabd7f-d199-44c4-8d32-191621b5c012",
       "name": "Tell Sessions"
@@ -1279,7 +1247,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3984,
+        -3776,
         -960
       ],
       "id": "bae4f226-6320-43f4-a60b-272776372478",
@@ -1319,9 +1287,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "joserra013@gmail.com",
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
+          "cachedResultName": "FT Las Tablas"
         },
         "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
         "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
@@ -1384,42 +1352,10 @@
       "typeVersion": 2.2,
       "position": [
         -4208,
-        -888
+        -896
       ],
       "id": "e6fed520-cb6e-4920-b385-0b3591955fb0",
       "name": "Data not empty?"
-    },
-    {
-      "parameters": {
-        "operation": "getAll",
-        "calendar": {
-          "__rl": true,
-          "value": "joserra013@gmail.com",
-          "mode": "list",
-          "cachedResultName": "joserra013@gmail.com"
-        },
-        "limit": 5,
-        "timeMin": "={{ $json.output.data.date_time }}",
-        "timeMax": "={{ $json.output.data.date_time.toDateTime().plus(1, 'hour')}}",
-        "options": {
-          "query": "={{ $('Get row(s) in sheet').item.json.Nombre }} + \" \" + {{ $('Get row(s) in sheet').item.json.Apellidos }}"
-        }
-      },
-      "type": "n8n-nodes-base.googleCalendar",
-      "typeVersion": 1.3,
-      "position": [
-        -3088,
-        -1080
-      ],
-      "id": "0013aea9-1438-4719-8e5f-3ba0a8b2c058",
-      "name": "Session existing?1",
-      "alwaysOutputData": true,
-      "credentials": {
-        "googleCalendarOAuth2Api": {
-          "id": "ruF1VNt8LhGDbDr6",
-          "name": "Google Calendar account"
-        }
-      }
     },
     {
       "parameters": {
@@ -1449,8 +1385,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2864,
-        -1080
+        -2656,
+        -1088
       ],
       "id": "33d90022-4b82-4813-8cf8-f0eca4da4b43",
       "name": "Personal Session found?"
@@ -1480,7 +1416,7 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        -2864,
+        -2416,
         -128
       ],
       "id": "88477394-c842-407b-8a74-85c154af4d00",
@@ -1492,6 +1428,150 @@
           "name": "WhatsApp account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FT Las Tablas"
+        },
+        "limit": 5,
+        "timeMin": "={{ $json.data.date_time }}",
+        "timeMax": "={{ $json.data.date_time.toDateTime().plus(1, 'hour')}}",
+        "options": {
+          "query": "Grupo"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -3328,
+        -800
+      ],
+      "id": "ac63b4c4-bdc8-47db-a454-1028c806f3af",
+      "name": "Group existing?",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FT Las Tablas"
+        },
+        "limit": 5,
+        "timeMin": "={{ $json.output.data.date_time }}",
+        "timeMax": "={{ $json.output.data.date_time.toDateTime().plus(1, 'hour')}}",
+        "options": {
+          "query": "={{ $('Get row(s) in sheet').item.json.Nombre }} + \" \" + {{ $('Get row(s) in sheet').item.json.Apellidos }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -2880,
+        -1088
+      ],
+      "id": "0013aea9-1438-4719-8e5f-3ba0a8b2c058",
+      "name": "Session existing?",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "742684742266734",
+        "recipientPhoneNumber": "34656754889",
+        "textBody": "=Hola Clara,\n\n{{ $('Get row(s) in sheet').item.json.Nombre }} {{ $('Get row(s) in sheet').item.json.Apellidos }} quiere reservar a las {{ $('AI Agent').item.json.output.data.date_time }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -3776,
+        -1152
+      ],
+      "id": "dd3122aa-ff41-4531-9325-fd21b893cf88",
+      "name": "Verification",
+      "webhookId": "50f2ce9e-d701-44cf-aa7b-3c1c2684c881",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3idoMG9n4wMOAXwp",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "563032b0-a70b-40c2-af37-118a844a27f6",
+              "leftValue": "={{ $json.output.data.date_time }}",
+              "rightValue": "={{ $now.plus(4, 'hours') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4000,
+        -960
+      ],
+      "id": "6d88afd7-3ebe-40d3-a56e-23d9939ccf8c",
+      "name": "Need for verification?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a7bd9552-b601-4695-89d2-37ed5cde8576",
+              "name": "response",
+              "value": "=Al ser con menos de 4 horas de antelación, te lo tenemos que confirmar.\n\nAhora mismo te confirmo la disponibilidad.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3568,
+        -1152
+      ],
+      "id": "199cf370-8b76-45a8-aff9-25651fb84a38",
+      "name": "Wait 4 confirm"
     }
   ],
   "pinData": {},
@@ -1837,22 +1917,11 @@
         ]
       ]
     },
-    "Session existing?": {
-      "main": [
-        [
-          {
-            "node": "Session found",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Grupo": {
       "main": [
         [
           {
-            "node": "Session existing?",
+            "node": "Group existing?",
             "type": "main",
             "index": 0
           }
@@ -2019,7 +2088,7 @@
       "main": [
         [
           {
-            "node": "Session existing?1",
+            "node": "Session existing?",
             "type": "main",
             "index": 0
           }
@@ -2059,7 +2128,7 @@
       "main": [
         [
           {
-            "node": "Personal?",
+            "node": "Need for verification?",
             "type": "main",
             "index": 0
           }
@@ -2067,17 +2136,6 @@
         [
           {
             "node": "GeneralInfo",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Session existing?1": {
-      "main": [
-        [
-          {
-            "node": "Personal Session found?",
             "type": "main",
             "index": 0
           }
@@ -2123,6 +2181,68 @@
           }
         ]
       ]
+    },
+    "Group existing?": {
+      "main": [
+        [
+          {
+            "node": "Session found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session existing?": {
+      "main": [
+        [
+          {
+            "node": "Personal Session found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Need for verification?": {
+      "main": [
+        [
+          {
+            "node": "Verification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Personal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verification": {
+      "main": [
+        [
+          {
+            "node": "Wait 4 confirm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 4 confirm": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2132,7 +2252,7 @@
     "availableInMCP": false,
     "errorWorkflow": "JnzPl20ahOeKZbta"
   },
-  "versionId": "460bc898-3fec-4977-ad8f-395e2d67794a",
+  "versionId": "a8c76500-1374-40ed-8cb6-00b8088a59e4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b6c612a53e312f4f2479997043e7752e49d692a2c9d97d16faf7033757675f39"
@@ -2140,10 +2260,10 @@
   "id": "5T6D6zusbdSCRDQD",
   "tags": [
     {
-      "createdAt": "2025-10-26T19:18:10.198Z",
-      "updatedAt": "2025-10-26T19:18:10.198Z",
-      "id": "Okzsc7kN913rFAJ3",
-      "name": "1.1"
+      "name": "2.1-ClaraCalendar",
+      "id": "WduVuLewufYfZT2D",
+      "createdAt": "2025-11-03T17:41:58.641Z",
+      "updatedAt": "2025-11-03T17:41:58.641Z"
     }
   ]
 }
