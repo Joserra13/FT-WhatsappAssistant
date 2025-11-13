@@ -12,7 +12,7 @@
       "typeVersion": 1,
       "position": [
         -7520,
-        -96
+        448
       ],
       "id": "2a752fee-3ef2-46b7-8349-920e47c97ee0",
       "name": "WhatsApp Trigger",
@@ -38,27 +38,28 @@
       "typeVersion": 2.2,
       "position": [
         -5040,
-        -96
+        448
       ],
       "id": "dec21c71-6400-462c-95f0-3f86b34243e8",
       "name": "AI Agent",
       "retryOnFail": true,
       "maxTries": 5,
-      "alwaysOutputData": false
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "operation": "send",
         "phoneNumberId": "742684742266734",
-        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
-        "textBody": "={{ $json.response }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $json.response || \"Ha habido un error, intenta volver a contactar un poco más tarde\" }}",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1,
       "position": [
-        -1760,
-        144
+        -1744,
+        112
       ],
       "id": "7d7dca06-945a-4e62-9c0a-21bbd912b5ac",
       "name": "Send message",
@@ -106,7 +107,7 @@
       "typeVersion": 2.2,
       "position": [
         -5024,
-        128
+        672
       ],
       "id": "018e2a61-f306-4b75-936b-b4bc68fa51bd",
       "name": "Informacion sobre el centro"
@@ -337,7 +338,7 @@
                 "combinator": "and"
               },
               "renameOutput": true,
-              "outputKey": "buscar_eventos"
+              "outputKey": "actualizar_evento"
             },
             {
               "conditions": {
@@ -372,7 +373,7 @@
       "typeVersion": 3.2,
       "position": [
         -4432,
-        -224
+        320
       ],
       "id": "e2ad650e-264f-4dde-97b4-7ace08a798cc",
       "name": "Switch"
@@ -407,7 +408,7 @@
       "typeVersion": 4.7,
       "position": [
         -7072,
-        -96
+        448
       ],
       "id": "393bc205-eb3d-471f-a544-742d65651957",
       "name": "Get row(s) in sheet",
@@ -428,7 +429,7 @@
       "typeVersion": 1.3,
       "position": [
         -4640,
-        128
+        672
       ],
       "id": "4b614f0f-5000-4dc3-977b-6029f5c80b43",
       "name": "Structured Output Parser"
@@ -446,14 +447,14 @@
         "timeMin": "={{ $('AI Agent').item.json.output.data.specific_date }}",
         "timeMax": "={{ (()=>{\n  if($json.output.data.date_range == \"specific_date\"){\n    return $('AI Agent').item.json.output.data.specific_date.toDateTime().plus(1, 'days')\n  } else {\n    return $('AI Agent').item.json.output.data.specific_date.toDateTime().plus(1, $json.output.data.date_range)\n  }\n})()}}",
         "options": {
-          "query": "={{ $('Get row(s) in sheet').item.json.Nombre + \" \" + $('Get row(s) in sheet').item.json.Apellidos }}"
+          "query": "={{ (()=>{\nif(!$('Get row(s) in sheet').item.json.Nombre){\n  return $json.output.wa_id\n}\nelse {\nreturn $('Get row(s) in sheet').item.json.Nombre + \" \" + $('Get row(s) in sheet').item.json.Apellidos \n}\n})()}}"
         }
       },
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2640,
-        176
+        -2416,
+        784
       ],
       "id": "5f941cfa-b8e7-4ce5-b9ef-75a064aabc54",
       "name": "Get events",
@@ -474,7 +475,7 @@
       "typeVersion": 1,
       "position": [
         -5280,
-        128
+        672
       ],
       "id": "92f89419-f13f-4c10-9825-a028d9c1424a",
       "name": "OpenRouter Chat Model",
@@ -500,8 +501,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2416,
-        800
+        -2192,
+        1408
       ],
       "id": "c7a2d1d1-4d43-46ee-8b2b-3111faa23f5a",
       "name": "Delete an event",
@@ -514,40 +515,6 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "9814fb22-4a49-41a2-86da-14f6ea272463",
-              "leftValue": "={{ $('WhatsApp Trigger').item.json.messages[0].type }}",
-              "rightValue": "text",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -6848,
-        -96
-      ],
-      "id": "805f88a0-af96-4d6d-8da2-6797b3b29a0d",
-      "name": "If"
-    },
-    {
-      "parameters": {
         "resource": "media",
         "operation": "mediaUrlGet",
         "mediaGetId": "={{ $('WhatsApp Trigger').item.json.messages[0].audio.id }}"
@@ -556,7 +523,7 @@
       "typeVersion": 1,
       "position": [
         -6624,
-        -32
+        528
       ],
       "id": "ed5b9286-999c-4198-b6b4-0d9d38cf7e30",
       "name": "Get audio URL",
@@ -579,7 +546,7 @@
       "typeVersion": 4.2,
       "position": [
         -6400,
-        -32
+        528
       ],
       "id": "ee47ff50-35ac-4609-8948-190c3ad96b5d",
       "name": "Download audio",
@@ -606,7 +573,7 @@
       "typeVersion": 1,
       "position": [
         -6176,
-        -32
+        528
       ],
       "id": "6a9b9752-23ed-4070-820c-c98ae96c49be",
       "name": "Transcribe a recording",
@@ -625,44 +592,10 @@
       "typeVersion": 2,
       "position": [
         -5952,
-        -32
+        528
       ],
       "id": "1b27a63b-adc4-49f0-a90e-3416c6d876c8",
       "name": "Convert into body"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "dc1c3b93-ecdd-46bd-83f5-4f10f6e732ef",
-              "leftValue": "={{ $('WhatsApp Trigger').item.json.messages[0].type }}",
-              "rightValue": "text",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -5728,
-        -96
-      ],
-      "id": "dadfd0a4-5b11-45a5-abc2-c094931e0b5c",
-      "name": "If1"
     },
     {
       "parameters": {
@@ -672,7 +605,7 @@
       "typeVersion": 2,
       "position": [
         -5504,
-        -192
+        352
       ],
       "id": "88eef1e6-2125-411c-b371-303c2c1c84c3",
       "name": "Return Whatsapp Text"
@@ -685,7 +618,7 @@
       "typeVersion": 2,
       "position": [
         -5504,
-        0
+        544
       ],
       "id": "51e46b3a-2485-4c8a-b1ff-d18a0a3946eb",
       "name": "Return audio text"
@@ -719,7 +652,7 @@
       "typeVersion": 2.2,
       "position": [
         -7296,
-        -96
+        448
       ],
       "id": "7813a465-1f6e-41b0-8f65-e018383e3a14",
       "name": "Check only for incoming msg"
@@ -731,8 +664,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2432,
-        -1104
+        -2416,
+        -512
       ],
       "id": "6b87e66e-82a7-42c2-b471-218929f8b674",
       "name": "Personal"
@@ -744,8 +677,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -3552,
-        -800
+        -3536,
+        -176
       ],
       "id": "c1d52fa3-ab53-4fbb-9f21-fa6b9571f1c1",
       "name": "Grupo"
@@ -763,14 +696,15 @@
         "useDefaultReminders": false,
         "additionalFields": {
           "color": "7",
+          "description": "={{(()=>{\n    if($('Get row(s) in sheet').first().json.Nombre){\n  return $('Get row(s) in sheet').first().json.Nombre + \" \" + $('Get row(s) in sheet').first().json.Apellidos\n  } else {\nreturn $('WhatsApp Trigger').item.json.contacts[0].profile.name + \"\\n\" + $json.wa_id\n  }\n})()}}",
           "summary": "={{ $json.summary }}"
         }
       },
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2208,
-        -1104
+        -2192,
+        -512
       ],
       "id": "c04160db-b90d-4608-ad09-66a946f9c3b5",
       "name": "Create session",
@@ -798,8 +732,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1984,
-        -384
+        -1968,
+        -80
       ],
       "id": "842af014-0e91-4721-834b-dad3e83f4f5c",
       "name": "GeneralInfo"
@@ -822,8 +756,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2640,
-        464
+        -2416,
+        1648
       ],
       "id": "ee4b1333-4ea4-44d0-9de7-bbdbda29c256",
       "name": "Check booked sessions",
@@ -854,8 +788,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2416,
-        464
+        -2192,
+        1648
       ],
       "id": "89dc9327-f8f5-40d4-b063-4889704dbe1d",
       "name": "Update session",
@@ -879,14 +813,14 @@
         "timeMin": "={{ $json.output.data.date_time }}",
         "timeMax": "={{ $json.output.data.date_time.toDateTime().plus(1, 'hours') }}",
         "options": {
-          "query": "={{ $('Get row(s) in sheet').item.json.Nombre }} + \" \" + {{ $('Get row(s) in sheet').item.json.Apellidos }}"
+          "query": "={{ (()=>{\n      if (!$(\"Get row(s) in sheet\").item.json.Nombre) {\n        return $json.output.wa_id;\n      } else {\n        if (\n          $('Get row(s) in sheet').item.json['Bono (Personal / grupo)'] ==\n          \"Personal\"\n        ) {\n          return (\n            $(\"Get row(s) in sheet\").item.json.Nombre +\n            \" \" +\n            $(\"Get row(s) in sheet\").item.json.Apellidos\n          );\n        } else {\n          return \"Grupo\";\n        }\n      }\n})()}}"
         }
       },
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2864,
-        656
+        -3312,
+        1072
       ],
       "id": "af8bfe07-c553-459c-8993-992e5639a27d",
       "name": "Get session",
@@ -926,8 +860,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3104,
-        -800
+        -3088,
+        -176
       ],
       "id": "50f791e8-db16-427b-9a0a-4e2e43fc18e3",
       "name": "Session found"
@@ -951,8 +885,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2208,
-        -528
+        -2192,
+        96
       ],
       "id": "05c8bc7d-a8a3-4c14-8aa5-d8c2b8a15933",
       "name": "Create an event",
@@ -981,8 +915,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2880,
-        -800
+        -2864,
+        -176
       ],
       "id": "fd81d4f4-23fb-4235-9631-e6d529e634b6",
       "name": "Add client",
@@ -1000,8 +934,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2656,
-        -800
+        -2640,
+        -176
       ],
       "id": "7ac7f242-42e8-469f-9d5c-6270853d848c",
       "name": "Session full?"
@@ -1034,8 +968,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2432,
-        -800
+        -2416,
+        -176
       ],
       "id": "48e84e87-79b5-4920-b4ea-0c3b23ee513c",
       "name": "If session full"
@@ -1058,8 +992,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2208,
-        -816
+        -2192,
+        -208
       ],
       "id": "8f9a6897-55fb-45c2-a96d-ad7ea1e28c2a",
       "name": "Change Color",
@@ -1098,8 +1032,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2416,
-        176
+        -2192,
+        784
       ],
       "id": "5b4a865d-15bd-4331-8264-49c964dabe05",
       "name": "No events?",
@@ -1122,45 +1056,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2192,
-        176
+        -1968,
+        784
       ],
       "id": "93babbbb-7f15-4d5f-9348-f455e51dc805",
       "name": "No sessions"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "6823e9ab-708d-47e4-be92-926cb131b052",
-              "leftValue": "={{ $json }}",
-              "rightValue": "",
-              "operator": {
-                "type": "object",
-                "operation": "empty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -2640,
-        656
-      ],
-      "id": "809fe118-241b-4c78-abf2-527656075dfc",
-      "name": "Session found?"
     },
     {
       "parameters": {
@@ -1190,8 +1090,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2864,
-        32
+        -2640,
+        640
       ],
       "id": "9d27dba1-5bac-4a92-8c07-a63753c289b1",
       "name": "CheckData"
@@ -1213,8 +1113,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2192,
-        368
+        -1968,
+        976
       ],
       "id": "06eabd7f-d199-44c4-8d32-191621b5c012",
       "name": "Tell Sessions"
@@ -1232,11 +1132,10 @@
             {
               "id": "ecbab3e7-8d2c-434e-bab2-78995db1480f",
               "leftValue": "={{ $('Get row(s) in sheet').item.json['Bono (Personal / grupo)'] }}",
-              "rightValue": "Personal",
+              "rightValue": "Grupo",
               "operator": {
                 "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
+                "operation": "notEquals"
               }
             }
           ],
@@ -1247,8 +1146,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -3776,
-        -960
+        -3760,
+        -448
       ],
       "id": "bae4f226-6320-43f4-a60b-272776372478",
       "name": "Personal?"
@@ -1271,7 +1170,7 @@
       "typeVersion": 1.3,
       "position": [
         -4896,
-        128
+        672
       ],
       "id": "3c448678-cacf-44bd-a158-5f1fed1efbaa",
       "name": "Get Public Holidays",
@@ -1302,7 +1201,7 @@
       "typeVersion": 1.3,
       "position": [
         -4768,
-        128
+        672
       ],
       "id": "fba17a88-b56c-4033-a9a5-d94a45dcf7da",
       "name": "Get sessions",
@@ -1352,58 +1251,10 @@
       "typeVersion": 2.2,
       "position": [
         -4208,
-        -896
+        -464
       ],
       "id": "e6fed520-cb6e-4920-b385-0b3591955fb0",
       "name": "Data not empty?"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "9ff7301d-c077-4df9-b619-2b0ff862dad6",
-              "leftValue": "={{ $json }}",
-              "rightValue": "",
-              "operator": {
-                "type": "object",
-                "operation": "empty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -2656,
-        -1088
-      ],
-      "id": "33d90022-4b82-4813-8cf8-f0eca4da4b43",
-      "name": "Personal Session found?"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $json.contacts[0].wa_id }}"
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        -5152,
-        128
-      ],
-      "id": "5d8887b9-f862-43c0-9862-34742aa0fbc7",
-      "name": "Simple Memory"
     },
     {
       "parameters": {
@@ -1416,8 +1267,8 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        -2416,
-        -128
+        -2192,
+        496
       ],
       "id": "88477394-c842-407b-8a74-85c154af4d00",
       "name": "Message to Clara",
@@ -1448,8 +1299,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -3328,
-        -800
+        -3312,
+        -176
       ],
       "id": "ac63b4c4-bdc8-47db-a454-1028c806f3af",
       "name": "Group existing?",
@@ -1474,18 +1325,19 @@
         "timeMin": "={{ $json.output.data.date_time }}",
         "timeMax": "={{ $json.output.data.date_time.toDateTime().plus(1, 'hour')}}",
         "options": {
-          "query": "={{ $('Get row(s) in sheet').item.json.Nombre }} + \" \" + {{ $('Get row(s) in sheet').item.json.Apellidos }}"
+          "query": "={{ (()=>{\nif(!$('Get row(s) in sheet').item.json.Nombre){\n  return $json.output.wa_id\n}\nelse {\nreturn $('Get row(s) in sheet').item.json.Nombre + \" \" + $('Get row(s) in sheet').item.json.Apellidos \n}\n})()}}"
         }
       },
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -2880,
-        -1088
+        -2864,
+        -496
       ],
       "id": "0013aea9-1438-4719-8e5f-3ba0a8b2c058",
       "name": "Session existing?",
       "alwaysOutputData": true,
+      "executeOnce": false,
       "credentials": {
         "googleCalendarOAuth2Api": {
           "id": "ruF1VNt8LhGDbDr6",
@@ -1504,8 +1356,8 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        -3776,
-        -1152
+        -2192,
+        -704
       ],
       "id": "dd3122aa-ff41-4531-9325-fd21b893cf88",
       "name": "Verification",
@@ -1544,8 +1396,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -4000,
-        -960
+        -3984,
+        -544
       ],
       "id": "6d88afd7-3ebe-40d3-a56e-23d9939ccf8c",
       "name": "Need for verification?"
@@ -1567,11 +1419,494 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3568,
-        -1152
+        -1968,
+        -704
       ],
       "id": "199cf370-8b76-45a8-aff9-25651fb84a38",
       "name": "Wait 4 confirm"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -7520,
+        240
+      ],
+      "id": "9bacf2d4-5e31-4443-a5fc-7d5e4f9610da",
+      "name": "Once a day"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "742684742266734",
+        "recipientPhoneNumber": "={{(()=>{\n  const desc = $json.description.split(\"\\n\")\n  return desc[1]\n})()}}",
+        "textBody": "=Hola\n\nDesde Favourite Trainer queremos recordarte que tienes una {{ $json.summary }} el {{ $json.start.dateTime.toDateTime().format('dd-MM-yyyy') }} a las {{ $json.start.dateTime.toDateTime().format('HH') }}\n\nTe esperamos!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -6848,
+        240
+      ],
+      "id": "b82d0ab5-97ac-4290-8a05-6a4c8576c0d9",
+      "name": "Remember Sesion de prueba",
+      "webhookId": "a80533e6-b0bf-4f78-9f9c-47e10cabdbbc",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3idoMG9n4wMOAXwp",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Recordatorio para las sesiones de prueba",
+        "height": 96,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -7248,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "f855bdf6-65dd-4340-8be4-7055ad90442f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FT Las Tablas"
+        },
+        "limit": 24,
+        "timeMax": "={{ $now.plus({ day: 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -7296,
+        240
+      ],
+      "id": "cacc6b90-1656-4c1f-bcee-f74d5523df68",
+      "name": "Get day events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "38bfce45-b141-4c80-83ca-e0de9725e192",
+              "leftValue": "={{ $json.summary }}",
+              "rightValue": "Sesión de prueba",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -7072,
+        240
+      ],
+      "id": "2020236f-b41a-4701-9c7c-fefca692f724",
+      "name": "Prueba?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9814fb22-4a49-41a2-86da-14f6ea272463",
+              "leftValue": "={{ $('WhatsApp Trigger').item.json.messages[0].type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -6848,
+        448
+      ],
+      "id": "805f88a0-af96-4d6d-8da2-6797b3b29a0d",
+      "name": "TextMessage?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dc1c3b93-ecdd-46bd-83f5-4f10f6e732ef",
+              "leftValue": "={{ $('WhatsApp Trigger').item.json.messages[0].type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -5728,
+        448
+      ],
+      "id": "dadfd0a4-5b11-45a5-abc2-c094931e0b5c",
+      "name": "If Text Message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9ff7301d-c077-4df9-b619-2b0ff862dad6",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2640,
+        -496
+      ],
+      "id": "33d90022-4b82-4813-8cf8-f0eca4da4b43",
+      "name": "No Personal Session found?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a7bd9552-b601-4695-89d2-37ed5cde8576",
+              "name": "response",
+              "value": "=Ya tienes una sesión el {{ $json.start.dateTime.toDateTime().format('dd-MM-yyyy') }} a las {{ $json.start.dateTime.toDateTime().format('HH') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1968,
+        144
+      ],
+      "id": "02b10fa1-7aaa-4de7-a0d5-e0721bd9c47f",
+      "name": "Session found1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "61373037-6c59-4cd2-8ba3-ab3549d66721",
+              "leftValue": "={{ $json.output.data.date_time }}",
+              "rightValue": "={{ $now.minus(4, 'hours') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3984,
+        1072
+      ],
+      "id": "8cf5fd2e-5ade-464c-aae8-095f7c34666d",
+      "name": "Check date"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "742684742266734",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "textBody": "=A pesar de que la sesión queda cancelada, al haber sido cancelada con menos de 4 horas de antelación, se restará del bono.\n\nLo sentimos.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -3536,
+        1488
+      ],
+      "id": "fe2bc344-7244-4404-a310-d2880c5b81be",
+      "name": "Message to customer",
+      "webhookId": "7e09a4ef-bbd0-4c18-ad18-badce1d2e1bf",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3idoMG9n4wMOAXwp",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "742684742266734",
+        "recipientPhoneNumber": "34656754889",
+        "textBody": "={{ $('Get row(s) in sheet').item.json.Nombre }} {{ $('Get row(s) in sheet').item.json.Apellidos }} ha cancelado {{ $('Switch').item.json.output.data.date_time }} con menos de 4 horas de antelacion",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -3760,
+        1488
+      ],
+      "id": "26f62d25-c701-4acb-a9fa-834b937e73ee",
+      "name": "Cancellation to Clara",
+      "webhookId": "7e09a4ef-bbd0-4c18-ad18-badce1d2e1bf",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "3idoMG9n4wMOAXwp",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contacts[0].wa_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -5152,
+        672
+      ],
+      "id": "461039e1-6ba0-44fa-8fa9-009d5de75381",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ae0cfb32-ba8e-4ed7-8a73-778536e3a8ce",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json['Bono (Personal / grupo)'] }}",
+              "rightValue": "Grupo",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2864,
+        1216
+      ],
+      "id": "d5adac95-cee3-4737-86e6-11c7d4d8fedc",
+      "name": "Borrar de Grupo?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "52f526d8-cf55-4662-97b2-da22d332aac1",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2416,
+        1216
+      ],
+      "id": "239dadcf-d4e6-405a-82ff-22b4315da62f",
+      "name": "LastfromtheGroup?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "e5cbf0803908ef6e3e465ed07b6df5f90173a49edc42ff610abfa69d4a907478@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "FT Las Tablas"
+        },
+        "eventId": "={{ $('Get session').item.json.id }}",
+        "useDefaultReminders": false,
+        "updateFields": {
+          "color": "={{ $json.mode }}",
+          "description": "={{ $json.newDescription.join(\"\\n\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -2192,
+        1200
+      ],
+      "id": "ed7388a2-9e02-4887-92d8-118bd86c1ed8",
+      "name": "Update an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "ruF1VNt8LhGDbDr6",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const description = $input.first().json.description\n\nconst nombre = $('Get row(s) in sheet').first().json.Nombre + \" \" + $('Get row(s) in sheet').first().json.Apellidos\n\nlet mode = 11;\n\nlet newDescription = description.split(\"\\n\")\n\nif (newDescription.length == 4){\n  mode = 2;\n}\n\nnewDescription = newDescription.filter(item => item != nombre)\n\nreturn {newDescription, mode};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2640,
+        1200
+      ],
+      "id": "7cce5eb0-8da6-4c8a-b6e1-eeb2abbecfe2",
+      "name": "Update description"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6823e9ab-708d-47e4-be92-926cb131b052",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3088,
+        1072
+      ],
+      "id": "809fe118-241b-4c78-abf2-527656075dfc",
+      "name": "No Session found?"
     }
   ],
   "pinData": {},
@@ -1676,7 +2011,7 @@
         ],
         [
           {
-            "node": "Get session",
+            "node": "Check date",
             "type": "main",
             "index": 0
           }
@@ -1687,7 +2022,7 @@
       "main": [
         [
           {
-            "node": "If",
+            "node": "TextMessage?",
             "type": "main",
             "index": 0
           }
@@ -1738,24 +2073,6 @@
         ]
       ]
     },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Get audio URL",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get audio URL": {
       "main": [
         [
@@ -1793,25 +2110,7 @@
       "main": [
         [
           {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If1": {
-      "main": [
-        [
-          {
-            "node": "Return Whatsapp Text",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Return audio text",
+            "node": "If Text Message",
             "type": "main",
             "index": 0
           }
@@ -1910,7 +2209,7 @@
       "main": [
         [
           {
-            "node": "Session found?",
+            "node": "No Session found?",
             "type": "main",
             "index": 0
           }
@@ -2037,24 +2336,6 @@
         ]
       ]
     },
-    "Session found?": {
-      "main": [
-        [
-          {
-            "node": "No sessions",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Delete an event",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "CheckData": {
       "main": [
         [
@@ -2142,35 +2423,6 @@
         ]
       ]
     },
-    "Personal Session found?": {
-      "main": [
-        [
-          {
-            "node": "Personal",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "GeneralInfo",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Message to Clara": {
       "main": [
         [
@@ -2197,7 +2449,7 @@
       "main": [
         [
           {
-            "node": "Personal Session found?",
+            "node": "No Personal Session found?",
             "type": "main",
             "index": 0
           }
@@ -2243,6 +2495,231 @@
           }
         ]
       ]
+    },
+    "Once a day": {
+      "main": [
+        [
+          {
+            "node": "Get day events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get day events": {
+      "main": [
+        [
+          {
+            "node": "Prueba?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prueba?": {
+      "main": [
+        [
+          {
+            "node": "Remember Sesion de prueba",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TextMessage?": {
+      "main": [
+        [
+          {
+            "node": "If Text Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Text Message": {
+      "main": [
+        [
+          {
+            "node": "Return Whatsapp Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return audio text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Personal Session found?": {
+      "main": [
+        [
+          {
+            "node": "Personal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Session found1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session found1": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check date": {
+      "main": [
+        [
+          {
+            "node": "Get session",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cancellation to Clara",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message to customer": {
+      "main": [
+        [
+          {
+            "node": "Get session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancellation to Clara": {
+      "main": [
+        [
+          {
+            "node": "Message to customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Borrar de Grupo?": {
+      "main": [
+        [
+          {
+            "node": "Update description",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LastfromtheGroup?": {
+      "main": [
+        [
+          {
+            "node": "Update an event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update an event": {
+      "main": [
+        [
+          {
+            "node": "GeneralInfo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update description": {
+      "main": [
+        [
+          {
+            "node": "LastfromtheGroup?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Session found?": {
+      "main": [
+        [
+          {
+            "node": "No sessions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Borrar de Grupo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2252,7 +2729,7 @@
     "availableInMCP": false,
     "errorWorkflow": "JnzPl20ahOeKZbta"
   },
-  "versionId": "a8c76500-1374-40ed-8cb6-00b8088a59e4",
+  "versionId": "b64c8e04-a2ac-4a3a-81d1-e9b58f9fd191",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b6c612a53e312f4f2479997043e7752e49d692a2c9d97d16faf7033757675f39"
@@ -2260,10 +2737,10 @@
   "id": "5T6D6zusbdSCRDQD",
   "tags": [
     {
-      "name": "2.1-ClaraCalendar",
-      "id": "WduVuLewufYfZT2D",
       "createdAt": "2025-11-03T17:41:58.641Z",
-      "updatedAt": "2025-11-03T17:41:58.641Z"
+      "updatedAt": "2025-11-03T17:41:58.641Z",
+      "id": "WduVuLewufYfZT2D",
+      "name": "2.1-ClaraCalendar"
     }
   ]
 }
